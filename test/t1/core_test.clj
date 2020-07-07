@@ -34,7 +34,8 @@
   (testing "multiplication"
     (is (= (optimize '(* x 1)) 'x))
     (is (= (optimize '(* x (+ 1 (/ y 1)))) '(* x (+ 1 y))))
-    (is (= (optimize '(* x (+ 1 (* y 0 1 2 (+ 4 3) 4 5)))) 'x))))
+    (is (= (optimize '(* x (+ 1 (* y 0 1 2 (+ 4 3) 4 5)))) 'x))
+    (is (= (optimize '(/ 1 y 1)) '(/ 1 y)))))
 
 (deftest ->javascript-test
   (testing "->javascript"

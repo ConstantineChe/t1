@@ -51,7 +51,9 @@
                 (reduced 0)
                 (if (= 1 arg) expr (concat expr [arg])))
 
-    (= op '/) (if (= 1 arg) expr (concat expr [arg]))
+    (= op '/) (if (and (= 1 arg) (> (count expr) 1))
+                expr
+                (concat expr [arg]))
     :else (concat expr [arg])))
 
 (defn optimize [[op & args]]
