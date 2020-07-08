@@ -84,23 +84,36 @@
 
       :else expr)))
 
-(defn- get-vars [[op & args]]
-  (reduce (fn [vars arg]
-            (if (symbol? arg)
-              (conj vars arg)
-              (if (list? arg)
-                (concat vars (get-vars arg))
-                vars))) [] args))
+(defn- get-vars [[_ & args]]
+  (distinct
+    (reduce (fn [vars arg]
+              (if (symbol? arg)
+                (conj vars arg)
+                (if (list? arg)
+                  (concat vars (get-vars arg))
+                 vars))) [] args)))
 
 (defn- ->javascript* [[op & args]]
-  (str "("
-       (apply str (interpose (str " " (name op) " ") ;don't want extra points for power and asb here
-                             (map (fn [arg]
-                                    (if (list? arg)
-                                      (->javascript* arg)
-                                      arg))
-                                  args)))
-       ")"))
+  (cond
+    (= op 'power) (apply format "Math.pow(%s, %s)"
+                         (map (fn [arg]
+                                (if (list? arg)
+                                  (->javascript* arg)
+                                  arg))
+                              args))
+    (= op 'abs) (format "Math.abs(%s)" (if (-> args first list?)
+                                         (-> args first ->javascript*)
+                                         (first args)))
+
+    :else
+   (str "("
+        (apply str (interpose (str " " (name op) " ")
+                              (map (fn [arg]
+                                     (if (list? arg)
+                                       (->javascript* arg)
+                                       arg))
+                                   args)))
+        ")")))
 
 (defn ->javascript [name expr]
   (str "function " name "(" (apply str (interpose ", " (get-vars expr)))

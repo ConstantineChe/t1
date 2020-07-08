@@ -45,4 +45,8 @@
 (deftest ->javascript-test
   (testing "->javascript"
     (is (= (->javascript "example" '(+ 1 x y (* 4 z) 6))
-           "function example(x, y, z) { return (1 + x + y + (4 * z) + 6); }"))))
+           "function example(x, y, z) { return (1 + x + y + (4 * z) + 6); }"))
+    (is (= (->javascript "example" '(+ 1 x y (abs (* 4 z)) 6))
+           "function example(x, y, z) { return (1 + x + y + Math.abs((4 * z)) + 6); }"))
+    (is (= (->javascript "example" '(+ 1 x y (power 4 (* z z)) 6))
+           "function example(x, y, z) { return (1 + x + y + Math.pow(4, (z * z)) + 6); }"))))
