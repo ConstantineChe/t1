@@ -21,7 +21,7 @@
 
   (testing "Exceptions"
     (is (thrown? Exception (evaluate {} '(- 1 (+) 2))))
-    (is (thrown? Exception (evaluate {} '(pow "1" 2))))
+    (is (thrown? Exception (evaluate {} '(power "1" 2))))
     (is (thrown? Exception (evaluate {} '(power 1 2 3))))
     (is (thrown? Exception (evaluate {} '(pow 1 2))))
     (is (thrown? Exception (evaluate {} '(abs 1 2 3))))))
@@ -35,7 +35,12 @@
     (is (= (optimize '(* x 1)) 'x))
     (is (= (optimize '(* x (+ 1 (/ y 1)))) '(* x (+ 1 y))))
     (is (= (optimize '(* x (+ 1 (* y 0 1 2 (+ 4 3) 4 5)))) 'x))
-    (is (= (optimize '(/ 1 y 1)) '(/ 1 y)))))
+    (is (= (optimize '(/ 1 y 1)) '(/ 1 y))))
+  (testing "power and abs"
+    (is (= (optimize '(abs (abs (abs x)))) '(abs x)))
+    (is (= (optimize '(power (abs x) 2)) '(power x 2)))
+    (is (= (optimize '(power x 0)) 1))
+    (is (= (optimize '(power x 1)) 'x))))
 
 (deftest ->javascript-test
   (testing "->javascript"

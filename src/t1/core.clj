@@ -38,7 +38,12 @@
 
 (defn- optimize* [op arg expr]
   (cond
-    (not arg) expr
+    (and (= op 'abs) (seq? arg) (-> arg first (= 'abs)))
+    (reduced arg)
+
+    (and (= 2 (count expr)) (= op 'power) (integer? arg) (even? arg)
+         (seq? (second expr)) (-> expr second first (= 'abs)))
+    (reduced (list 'power (-> expr second second) arg))
 
     (symbol? arg) (concat expr [arg])
 
@@ -54,6 +59,11 @@
     (= op '/) (if (and (= 1 arg) (> (count expr) 1))
                 expr
                 (concat expr [arg]))
+
+    (and (= 2 (count expr)) (= op 'power) (zero? arg)) (reduced 1)
+
+    (and (= 2 (count expr)) (= op 'power) (= 1 arg)) (reduced (second expr))
+
     :else (concat expr [arg])))
 
 (defn optimize [[op & args]]
