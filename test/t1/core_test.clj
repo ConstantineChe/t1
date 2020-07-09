@@ -40,7 +40,12 @@
     (is (= (optimize '(abs (abs (abs x)))) '(abs x)))
     (is (= (optimize '(power (abs x) 2)) '(power x 2)))
     (is (= (optimize '(power x 0)) 1))
-    (is (= (optimize '(power x 1)) 'x))))
+    (is (= (optimize '(power x 1)) 'x)))
+  (testing "reduction to identity"
+    (is (= (optimize '(* 2 (* 1 1) 3)) '(* 2 3)))
+    (is (= (optimize '(* 2 (+ 0 0) 3)) 0))
+    (is (= (optimize '(+ 2 (+ 0 0) 3)) '(+ 2 3)))
+    (is (= (optimize '(+ 2 (* 1 1) 3)) '(+ 2 1 3)))))
 
 (deftest ->javascript-test
   (testing "->javascript"

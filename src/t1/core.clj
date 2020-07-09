@@ -77,7 +77,8 @@
       (number? expr) expr
       (symbol? expr) expr
 
-      (= 1 (count expr)) 0
+      (and (= 1 (count expr)) (#{'+ '-} op)) 0
+      (and (= 1 (count expr)) (= '* op)) 1
 
       (and (#{'- '+ '/ '*} op) (= 2 (count expr)))
       (second expr)
